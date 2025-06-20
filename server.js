@@ -16,7 +16,7 @@ app.use(cors({
 app.use(express.json()); // Middleware to parse JSON request bodies
 
 // Define the proxy endpoint
-app.post('/api/create-lead', async (req, res) => {
+app.post('/', async (req, res) => {
     const targetApiUrl = process.env.TARGET_API_URL || "https://admission.multanust.edu.pk/v1/lead/create";
     const username = process.env.API_USERNAME || "website";
     const password = process.env.API_PASSWORD || "ts$h1wztSyWQ";
