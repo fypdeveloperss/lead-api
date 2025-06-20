@@ -2,7 +2,7 @@
   "name": "proxy-server",
   "version": "1.0.0",
   "description": "Proxy server for API requests",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'No build step required'",
