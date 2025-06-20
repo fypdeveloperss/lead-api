@@ -9,14 +9,28 @@ const PORT = process.env.PORT || 3001; // Default to port 3001 if not specified
 // Configure CORS for your proxy server
 app.use(cors({
     origin: process.env.CORS_ORIGIN || '*',
-    methods: ['POST'],
+    methods: ['POST', 'OPTIONS'], // Added OPTIONS method
     allowedHeaders: ['Content-Type'],
+    credentials: false
 }));
 
 app.use(express.json()); // Middleware to parse JSON request bodies
 
+// Handle preflight OPTIONS requests explicitly
+app.options('/', (req, res) => {
+    res.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || '*');
+    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.sendStatus(200);
+});
+
 // Define the proxy endpoint
 app.post('/', async (req, res) => {
+    // Set CORS headers explicitly for POST as well
+    res.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || '*');
+    res.header('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    
     const targetApiUrl = process.env.TARGET_API_URL || "https://admission.multanust.edu.pk/v1/lead/create";
     const username = process.env.API_USERNAME || "website";
     const password = process.env.API_PASSWORD || "ts$h1wztSyWQ";
@@ -45,6 +59,11 @@ app.post('/', async (req, res) => {
             res.status(500).json({ message: 'Internal proxy server error' });
         }
     }
+});
+
+// Catch all other routes
+app.all('*', (req, res) => {
+    res.status(404).json({ message: 'Route not found' });
 });
 
 // Start the server
