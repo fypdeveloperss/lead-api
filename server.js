@@ -20,26 +20,40 @@ app.get('/lead_programs', async (req, res) => {
     const username = process.env.API_USERNAME || "website";
     const password = process.env.API_PASSWORD || "ts$h1wztSyWQ";
 
+    console.log('Fetching lead programs from:', leadProgramsUrl);
+    console.log('Using credentials:', { username, password: password ? '***' : 'not set' });
+
     try {
         const response = await axios.get(leadProgramsUrl, {
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': '*/*',
+                'Accept': 'application/json',
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Connection': 'keep-alive',
                 'username': username,
                 'password': password,
             },
         });
+        
+        console.log('Lead programs response status:', response.status);
+        console.log('Lead programs response data:', response.data);
+        
         res.status(response.status).json(response.data);
     } catch (error) {
-        console.error('Proxy server error (GET):', error);
+        console.error('Proxy server error (GET):', error.message);
         if (error.response) {
+            console.error('Error response status:', error.response.status);
+            console.error('Error response data:', error.response.data);
             res.status(error.response.status).json(error.response.data);
         } else {
-            res.status(500).json({ message: 'Internal proxy server error' });
+            res.status(500).json({ message: 'Internal proxy server error', error: error.message });
         }
     }
+});
+
+// Add a test endpoint to verify the server is working
+app.get('/test', (req, res) => {
+    res.json({ message: 'Proxy server is working', timestamp: new Date().toISOString() });
 });
 
 // POST endpoint for creating leads (existing functionality)
